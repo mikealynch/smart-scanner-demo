@@ -49,23 +49,27 @@ if uploaded_file is not None:
         if image is None:
             raise ValueError("Failed to load image. Ensure the file is a valid image.")
 
-        
-        st.write('First we decode the image into a format our OCR tool can understand. Then we convert the image from BGR( Blue, Green, Red) to HSV (Hue, Saturation, and Value) to make it easier to extract the business card region.')
-        
 
-        # Step 2: Convert the image to HSV color space for color-based segmentation
-        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        
-        st.image(hsv_image, caption="HSV Image", use_container_width=True)
-        
         st.markdown("""
-        ### Why Would You Use This in a Business Card Scanning App?
+        ### Convert the Image from RGB to HSV
+        
+        First we decode the image into a format our OCR tool can understand. Then we convert the image from BGR( Blue, Green, Red) to HSV (Hue, Saturation, and Value) to make it easier to extract the business card region.
         
         - **Color-Based Segmentation:** If you want to extract the business card from an image, HSV helps because you can define a color range for the card (like a light-colored background) that is independent of brightness.
 
         - **Better Detection in Varying Light:** HSV is less sensitive to lighting variations, so if the card's color is washed out or dark, working in the HSV model helps isolate the color and perform better detection.
 
         """)
+                
+
+        # Step 2: Convert the image to HSV color space for color-based segmentation
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        
+        
+        
+        st.image(hsv_image, caption="HSV Image", use_container_width=True)
+        
+
 
 
 
@@ -76,17 +80,19 @@ if uploaded_file is not None:
         # Step 4: Create a mask for colors within the specified range
         mask = cv2.inRange(hsv_image, lower_bound, upper_bound)
         
-        st.image(mask, caption="Mask", use_container_width=True)
-
         st.markdown("""
         ### Find Contours to Identify Business Card
         
-        1. **Contours** are the boundaries or edges of objects detected in an image. In this step, we search for the contours in the image using the mask created from color segmentation.
+        1. **Contours** are the boundaries or edges of objects detected in an image. In this step, we search for the contours in the image using a mask created from color segmentation.
         3. Once contours are found, we assume that the **largest contour** corresponds to the business card. This is based on the assumption that the business card will be the largest object in the image.
         4. We then calculate the **bounding box** around this largest contour, which gives us the coordinates of the area that we believe contains the business card.
         
         By isolating the largest contour, we ensure that we focus on the business card and exclude smaller objects or noise in the image.
         """)
+
+        
+        st.image(mask, caption="Mask", use_container_width=True)
+
 
 
 
