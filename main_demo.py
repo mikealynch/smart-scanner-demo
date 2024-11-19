@@ -224,10 +224,13 @@ if uploaded_file is not None:
         """)
 
         
-        st.write(prompt)
+        st.markdown(f"""
+        ### Generated Prompt
         
+        ```python
+        {prompt}        
 
-
+        """)
 
 
         # Prepare the data for the OpenAI API request
