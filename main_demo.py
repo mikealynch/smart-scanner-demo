@@ -53,11 +53,8 @@ if uploaded_file is not None:
         st.markdown("""
         ### Convert the Image from RGB to HSV
         
-        First we decode the image into a format our OCR tool can understand. Then we convert the image from BGR( Blue, Green, Red) to HSV (Hue, Saturation, and Value) to make it easier to extract the business card region.
+        First we decode the image into a format our OCR tool can understand. Then we convert the image from RGB(Red, Blue, Green) to HSV (Hue, Saturation, and Value) to make it easier to extract the business card region.
         
-        - **Color-Based Segmentation:** If you want to extract the business card from an image, HSV helps because you can define a color range for the card (like a light-colored background) that is independent of brightness.
-
-        - **Better Detection in Varying Light:** HSV is less sensitive to lighting variations, so if the card's color is washed out or dark, working in the HSV model helps isolate the color and perform better detection.
 
         """)
                 
@@ -81,13 +78,12 @@ if uploaded_file is not None:
         mask = cv2.inRange(hsv_image, lower_bound, upper_bound)
         
         st.markdown("""
-        ### Find Contours to Identify Business Card
+        ### Create a Mask and Find COntours Contours to Identify Business Card
         
         1. **Contours** are the boundaries or edges of objects detected in an image. In this step, we search for the contours in the image using a mask created from color segmentation.
         3. Once contours are found, we assume that the **largest contour** corresponds to the business card. This is based on the assumption that the business card will be the largest object in the image.
         4. We then calculate the **bounding box** around this largest contour, which gives us the coordinates of the area that we believe contains the business card.
         
-        By isolating the largest contour, we ensure that we focus on the business card and exclude smaller objects or noise in the image.
         """)
 
         
@@ -126,7 +122,7 @@ if uploaded_file is not None:
 
 
         st.markdown("""
-        ### Compress the Image for Faster Processing
+        ### Crop and Compress the Image for Faster Processing
         
         To speed up processing, we compress the cropped image by resizing it to 50% of its original size. This reduces the image dimensions, making it easier and faster for EasyOCR to analyze the text, without compromising the quality too much.
         """)
@@ -138,7 +134,7 @@ if uploaded_file is not None:
                 
         # Display the dimensions in Streamlit using Markdown
         st.markdown(f"""
-        ### Image Dimensions
+        Uncompressed Image Dimensions
         - **Width**: {width} pixels  
         - **Height**: {height} pixels
         """)
@@ -154,7 +150,7 @@ if uploaded_file is not None:
                 
         # Display the dimensions in Streamlit using Markdown
         st.markdown(f"""
-        ### Image Dimensions
+        Compressed Image Dimensions
         - **Width**: {width} pixels  
         - **Height**: {height} pixels
         """)
