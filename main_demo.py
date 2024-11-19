@@ -284,7 +284,7 @@ if uploaded_file is not None:
         while valid_json == False:
             try:
                 json.loads(clean_response)
-                st.write(clean_response)
+                
                 valid_json = True
             except json.JSONDecodeError:
                 prompt = "convert this text to valid json: " + " ".join(clean_response)
@@ -306,12 +306,12 @@ if uploaded_file is not None:
 
                 clean_response = result['choices'][0]['text'].strip()
                 
-                st.json(clean_response)
+                
                 
                 valid_json = False
 
 
-
+        st.json(clean_response)
 
         categorized_data = json.loads(clean_response)
         st.title("Step 4: Send Data")
