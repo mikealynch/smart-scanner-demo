@@ -35,7 +35,8 @@ with header:
 uploaded_file = st.file_uploader("Upload a business card image for OCR analysis", type=["jpg", "jpeg", "png", "bmp"])
 if uploaded_file is not None:
     try:
-        
+        st.title('Step 1: Image Pre-processing')
+
         # Debugging: Print the type of the uploaded file to ensure it's correct
         st.write(f"Uploaded file type: {uploaded_file.type}")
         st.image(uploaded_file, caption="Uploaded File", use_container_width=True)
@@ -48,7 +49,6 @@ if uploaded_file is not None:
         if image is None:
             raise ValueError("Failed to load image. Ensure the file is a valid image.")
 
-        st.title('Step 1: Image Pre-processing')
         
         st.write('First we decode the image into a format our OCR tool can understand. Then we convert the image from BGR( Blue, Green, Red) to HSV (Hue, Saturation, and Value) to make it easier to extract the business card region.')
         
