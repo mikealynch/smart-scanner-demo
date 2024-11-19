@@ -38,6 +38,8 @@ if uploaded_file is not None:
         
         # Debugging: Print the type of the uploaded file to ensure it's correct
         st.write(f"Uploaded file type: {uploaded_file.type}")
+        st.image(uploaded_file, caption="Uploaded File", use_container_width=True)
+
         
         # Step 1: Convert the uploaded file to a NumPy array (OpenCV format)
         file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
