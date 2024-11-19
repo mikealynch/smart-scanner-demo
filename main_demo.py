@@ -116,6 +116,14 @@ if uploaded_file is not None:
         # Compress the image by resizing it (downscale by 50%)
         compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
 
+
+        st.markdown("""
+        ### Compress the Image for Faster Processing
+        
+        To speed up processing, we compress the cropped image by resizing it to 50% of its original size. This reduces the image dimensions, making it easier and faster for EasyOCR to analyze the text, without compromising the quality too much.
+        """)
+
+
         st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width=True)
         
         width, height = pil_image.size
@@ -144,12 +152,7 @@ if uploaded_file is not None:
         """)
         
         
-        st.markdown("""
-        ###Compress the Image for Faster Processing
-        
-        To speed up processing, we compress the cropped image by resizing it to 50% of its original size. This reduces the image dimensions, making it easier and faster for EasyOCR to analyze the text, without compromising the quality too much.
-        
-        """)
+
 
 
 
