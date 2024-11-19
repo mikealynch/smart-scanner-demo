@@ -291,7 +291,8 @@ if uploaded_file is not None:
                 result = response.json()
 
                 clean_response = result['choices'][0]['text'].strip()
-                st.write(clean_response)
+                
+                st.json(clean_response)
                 
                 valid_json = False
 
