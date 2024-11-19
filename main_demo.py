@@ -224,13 +224,27 @@ if uploaded_file is not None:
         """)
 
         
-        st.markdown(f"""
-        ### Generated Prompt
-        
-        ```python
-        {prompt}        
-
-        """)
+        st.markdown("""
+        <style>
+        .custom-code-block {
+            width: 100%;
+            height: auto;
+            max-height: 300px; /* Set a maximum height if needed */
+            overflow-wrap: break-word; /* Enable wrapping for long lines */
+            white-space: pre-wrap; /* Preserve spaces and wraps text */
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            overflow: auto; /* Add a scrollbar if content exceeds max height */
+        }
+        </style>
+        <div class="custom-code-block">
+        {content}
+        </div>
+    """.replace("{content}", prompt), unsafe_allow_html=True)
+    
 
 
         # Prepare the data for the OpenAI API request
