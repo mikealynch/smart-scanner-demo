@@ -116,7 +116,8 @@ if uploaded_file is not None:
         # Compress the image by resizing it (downscale by 50%)
         compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
 
-        
+        st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width=True)
+
         # Display the cropped image in Streamlit
         st.image(compressed_image, caption="Cropped and Compressed Business Card", use_container_width=True)
         
