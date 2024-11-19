@@ -245,7 +245,7 @@ if uploaded_file is not None:
                 st.write(clean_response)
                 valid_json = True
             except json.JSONDecodeError:
-                prompt = "convert this text to valid json: " + " ".join(valid_json)
+                prompt = "convert this text to valid json: " + " ".join(clean_response)
                 data = {
                     "model": "gpt-3.5-turbo-instruct",
                     "prompt": prompt,
