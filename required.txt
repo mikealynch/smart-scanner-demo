@@ -1,0 +1,7 @@
+easyocr
+pillow
+opencv-python-headless
+pandas
+openai
+python-dotenv
+requests
