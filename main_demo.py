@@ -29,6 +29,8 @@ headers = {
 # Initialize session state for categorized data
 if "categorized_data" not in st.session_state:
     st.session_state.categorized_data = None
+if "data_uploaded" not in st.session_state:
+    st.session_state.data_uploaded = False
 
 # Header section for the Streamlit app
 with header:
@@ -36,7 +38,7 @@ with header:
 
 # File uploader for image input
 uploaded_file = st.file_uploader("Upload a business card image for OCR analysis", type=["jpg", "jpeg", "png", "bmp"])
-if uploaded_file is not None and st.session_state.categorized_data is None:
+if uploaded_file is not None and not st.session_state.data_uploaded:
     try:
         st.title('Step 1: Image Pre-processing')
 
@@ -96,6 +98,7 @@ if uploaded_file is not None and st.session_state.categorized_data is None:
             try:
                 categorized_data = json.loads(clean_response)
                 st.session_state.categorized_data = categorized_data
+                st.session_state.data_uploaded = True
                 break
             except json.JSONDecodeError:
                 prompt = "convert this text to valid json: " + clean_response
@@ -111,7 +114,7 @@ if uploaded_file is not None and st.session_state.categorized_data is None:
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-if st.session_state.categorized_data:
+if st.session_state.data_uploaded and st.session_state.categorized_data:
     st.title("Step 4: Send Data")
     st.markdown("""
     ### Display and Edit Extracted Data
@@ -157,5 +160,23 @@ if st.session_state.categorized_data:
             conn.close()
 
             st.success("Data successfully submitted to the database!")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+
+    if st.button("View Database Contents"):
+        try:
+            conn = sqlite3.connect("business_cards.db")
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM business_cards")
+            rows = cursor.fetchall()
+
+            if rows:
+                df = pd.DataFrame(rows, columns=["First Name", "Last Name", "Position", "Email", "Phone Number", "Country", "Company Name"])
+                st.write(df)
+            else:
+                st.info("The database is empty.")
+
+            conn.close()
         except Exception as e:
             st.error(f"An error occurred: {e}")
