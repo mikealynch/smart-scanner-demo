@@ -259,3 +259,26 @@ if st.session_state.data_uploaded and st.session_state.categorized_data:
         except Exception as e:
             st.error(f"An error occurred while clearing the database: {e}")
 
+    if st.button("Download Database as CSV"):
+        try:
+            conn = sqlite3.connect("business_cards.db")
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM business_cards")
+            rows = cursor.fetchall()
+
+            if rows:
+                df = pd.DataFrame(rows, columns=["First Name", "Last Name", "Position", "Email", "Phone Number", "Country", "Company Name"])
+                csv = df.to_csv(index=False)
+                st.download_button(
+                    label="Download CSV",
+                    data=csv,
+                    file_name="business_cards.csv",
+                    mime="text/csv"
+                )
+            else:
+                st.info("The database is empty. Nothing to download.")
+
+            conn.close()
+        except Exception as e:
+            st.error(f"An error occurred while downloading the database: {e}")
