@@ -178,7 +178,18 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-if st.button("Submit to Database"):
+if st.session_state.data_uploaded and st.session_state.categorized_data:
+    st.title("Step 5: Review and Edit Data")
+    st.markdown("""
+    ### Display and Edit Extracted Data
+    We then display the extracted data fields in a user-friendly format. Users can review the information and make edits if necessary to ensure everything is accurate before final submission.
+    """)
+
+    updated_data = {}
+    for key, value in st.session_state.categorized_data.items():
+        updated_data[key] = st.text_input(key, value=value)
+
+   if st.button("Submit to Database"):
     try:
         conn = sqlite3.connect("business_cards.db")
         cursor = conn.cursor()
@@ -215,27 +226,31 @@ if st.button("Submit to Database"):
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
-if st.button("View Database Contents"):
-    try:
-        conn = sqlite3.connect("business_cards.db")
-        cursor = conn.cursor()
+    if st.button("View Database Contents"):
+        try:
+            conn = sqlite3.connect("business_cards.db")
+            cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM business_cards")
-        rows = cursor.fetchall()
+            cursor.execute("SELECT * FROM business_cards")
+            rows = cursor.fetchall()
 
-        if rows:
-            df = pd.DataFrame(rows, columns=["First Name", "Last Name", "Position", "Email", "Phone Number", "Country", "Company Name"])
-            st.write(df)
-        else:
-            st.info("The database is empty.")
+            if rows:
+                df = pd.DataFrame(rows, columns=["First Name", "Last Name", "Position", "Email", "Phone Number", "Country", "Company Name"])
+                st.write(df)
+            else:
+                st.info("The database is empty.")
 
-        conn.close()
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+            conn.close()
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
+   
+   
+   
+   
 
-if st.button("Clear Database"):
-     try:
+    if st.button("Clear Database"):
+        try:
             conn = sqlite3.connect("business_cards.db")
             cursor = conn.cursor()
 
@@ -244,6 +259,6 @@ if st.button("Clear Database"):
             conn.close()
 
             st.success("Database cleared successfully!")
-    except Exception as e:
+        except Exception as e:
             st.error(f"An error occurred while clearing the database: {e}")
 
