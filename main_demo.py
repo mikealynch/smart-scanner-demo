@@ -45,6 +45,9 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
     try:
         st.title('Step 2: Image Pre-processing')
 
+        st.write(f"Uploaded file type: {uploaded_file.type}")
+        st.image(uploaded_file, caption="Uploaded File", use_column_width=True)
+
         # Convert the uploaded file to a NumPy array (OpenCV format)
         file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
@@ -52,14 +55,28 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         if image is None:
             raise ValueError("Failed to load image. Ensure the file is a valid image.")
 
-        st.image(image, caption="Uploaded Image", use_column_width=True)
+        st.markdown("""
+        ### Convert the Image from RGB to HSV
+        First we decode the image into a format our OCR tool can understand. Then we convert the image from RGB (Red, Blue, Green) to HSV (Hue, Saturation, and Value) to make it easier to extract the business card region.
+        """)
 
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        st.image(hsv_image, caption="HSV Image", use_column_width=True)
+
         lower_bound = np.array([0, 0, 180])
         upper_bound = np.array([180, 50, 255])
         mask = cv2.inRange(hsv_image, lower_bound, upper_bound)
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+        st.markdown("""
+        ### Create a Mask and Find Contours to Identify the Business Card
+        1. **Contours** are the boundaries or edges of objects detected in an image. In this step, we search for the contours in the image using a mask created from color segmentation.
+        2. Once contours are found, we assume that the **largest contour** corresponds to the business card. This is based on the assumption that the business card will be the largest object in the image.
+        3. We then calculate the **bounding box** around this largest contour, which gives us the coordinates of the area that we believe contains the business card.
+        """)
+
+        st.image(mask, caption="Mask", use_column_width=True)
+
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
             raise ValueError("No contours found; make sure the color range includes the business card.")
 
@@ -74,16 +91,26 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         pil_image = Image.fromarray(cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB))
         compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
 
+        st.markdown("""
+        ### Crop and Compress the Image for Faster Processing
+        To speed up processing, we compress the cropped image by resizing it to 50% of its original size. This reduces the image dimensions, making it easier and faster for EasyOCR to analyze the text, without compromising the quality too much.
+        """)
+
+        st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_column_width=True)
+        st.image(compressed_image, caption="Cropped and Compressed Business Card", use_column_width=True)
+
         st.title('Step 3: OCR Text Extraction')
 
-        # Initialize EasyOCR reader for English and Spanish
+        st.markdown("""
+        ### Use OCR to Extract Text from the Image
+        Next, we use **EasyOCR**, an optical character recognition (OCR) tool, to extract text from the image. EasyOCR is capable of recognizing text in various languages, making it ideal for business cards in different languages.
+        """)
+
         reader = easyocr.Reader(['en', 'es'])
         image_np = np.array(compressed_image)
         result = reader.readtext(image_np)
 
-        st.image(compressed_image, caption="Processed Business Card", use_column_width=True)
-
-        st.write("Detected Text:")
+        st.write("Detected Text from the Business Card:")
         text_values = [detection[1] for detection in result]
         for text in text_values:
             st.write(f"- {text}")
@@ -91,6 +118,28 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         st.session_state.ocr_results = text_values
 
         prompt = "the information in this data set was pulled from a single business card. using this information, create valid json that only contains first name, last name, position, email, phone number, country, and company name: " + " ".join(text_values)
+
+        st.title("Step 4: Format and Process the Data")
+
+        st.markdown("""
+        #### Send Text Data to OpenAI:
+        Now, we take the detected text and send it to **OpenAI's GPT model** to format the data into a **JSON structure**. The goal is to extract key fields. This step allows us to clean up the extracted information and organize it in a way that's easy to work with.
+        """)
+
+        st.markdown(f"""
+        <style>
+        .custom-code-block {{
+            width: 100%;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            overflow: auto;
+        }}
+        </style>
+        <div class="custom-code-block">{prompt}</div>
+        """, unsafe_allow_html=True)
 
         data = {
             "model": "gpt-3.5-turbo-instruct",
@@ -130,10 +179,9 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         st.error(f"An error occurred: {str(e)}")
 
 if st.session_state.data_uploaded and st.session_state.categorized_data:
-    st.title("Step 4: Review and Edit Data")
+    st.title("Step 5: Review and Edit Data")
     st.markdown("""
     ### Display and Edit Extracted Data
-
     We then display the extracted data fields in a user-friendly format. Users can review the information and make edits if necessary to ensure everything is accurate before final submission.
     """)
 
