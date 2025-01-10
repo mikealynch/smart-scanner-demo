@@ -15,8 +15,13 @@ import sqlite3  # For SQL database integration
 
 # Helper function to convert camelCase to snake_case
 def camel_to_snake(name):
-    s1 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
+    # Replace spaces with underscores
+    name = re.sub(r'\s+', '_', name)
+    # Add underscores between camelCase transitions
+    s1 = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name)
+    # Ensure all characters are lowercase
     return s1.lower()
+
 
 # Set the environment variable before importing easyocr
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
