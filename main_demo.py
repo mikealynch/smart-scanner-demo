@@ -243,3 +243,17 @@ if st.session_state.data_uploaded and st.session_state.categorized_data:
             conn.close()
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
+    if st.button("Clear Database"):
+        try:
+            conn = sqlite3.connect("business_cards.db")
+            cursor = conn.cursor()
+
+            cursor.execute("DELETE FROM business_cards")
+            conn.commit()
+            conn.close()
+
+            st.success("Database cleared successfully!")
+        except Exception as e:
+            st.error(f"An error occurred while clearing the database: {e}")
+
