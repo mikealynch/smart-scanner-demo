@@ -15,7 +15,11 @@ import sqlite3  # For SQL database integration
 
 # Helper function to convert camelCase to snake_case
 def camel_to_snake(name):
-    s1 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
+    # Replace spaces with underscores
+    name = re.sub(r'\s+', '_', name)
+    # Add underscores between camelCase transitions
+    s1 = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name)
+    # Ensure all characters are lowercase
     return s1.lower()
 
 # Set the environment variable before importing easyocr
@@ -102,10 +106,10 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         """)
 
         st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width =True)
-                
+        st.image(compressed_image, caption="Cropped and Compressed Business Card", use_container_width =True)
+        
         if pil_image.height > 1000:
-            compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
-            st.image(compressed_image, caption="Cropped and Compressed Business Card", use_container_width =True)
+            compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))    
             pil_image = compressed_image
             
         else: pil_image = image
@@ -134,7 +138,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
 
         st.markdown("""
         #### Send Text Data to OpenAI:
-        Now, we take the detected text and send it to **OpenAI's GPT model** to format the data into a **JSON structure**. The goal is to extract key fields. This step allows us to clean up the extracted information and organize it in a way that's easy to work with. Please use snake case for the keys. 
+        Now, we take the detected text and send it to **OpenAI's GPT model** to format the data into a **JSON structure**. The goal is to extract key fields. This step allows us to clean up the extracted information and organize it in a way that's easy to work with.  
         """)
 
         st.markdown(f"""
