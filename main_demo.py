@@ -13,6 +13,11 @@ import requests
 import json
 import sqlite3  # For SQL database integration
 
+# Helper function to convert camelCase to snake_case
+def camel_to_snake(name):
+    s1 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
+    return s1.lower()
+
 # Set the environment variable before importing easyocr
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
@@ -46,7 +51,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         st.title('Image Pre-processing')
 
         st.write(f"Uploaded file type: {uploaded_file.type}")
-        st.image(uploaded_file, caption="Uploaded File", use_column_width=True)
+        st.image(uploaded_file, caption="Uploaded File", use_container_width =True)
 
         # Convert the uploaded file to a NumPy array (OpenCV format)
         file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
@@ -61,7 +66,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         """)
 
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        st.image(hsv_image, caption="HSV Image", use_column_width=True)
+        st.image(hsv_image, caption="HSV Image", use_container_width =True)
 
         lower_bound = np.array([0, 0, 180])
         upper_bound = np.array([180, 50, 255])
@@ -74,7 +79,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         3. We then calculate the **bounding box** around this largest contour, which gives us the coordinates of the area that we believe contains the business card.
         """)
 
-        st.image(mask, caption="Mask", use_column_width=True)
+        st.image(mask, caption="Mask", use_container_width =True)
 
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
@@ -96,8 +101,8 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         To speed up processing, we compress the cropped image by resizing it to 50% of its original size. This reduces the image dimensions, making it easier and faster for EasyOCR to analyze the text, without compromising the quality too much.
         """)
 
-        st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_column_width=True)
-        st.image(compressed_image, caption="Cropped and Compressed Business Card", use_column_width=True)
+        st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width =True)
+        st.image(compressed_image, caption="Cropped and Compressed Business Card", use_container_width =True)
 
         st.title('OCR Text Extraction')
 
@@ -161,6 +166,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         while True:
             try:
                 categorized_data = json.loads(clean_response)
+                categorized_data = {camel_to_snake(k): v for k, v in categorized_data.items()}
                 st.session_state.categorized_data = categorized_data
                 st.session_state.data_uploaded = True
                 break
@@ -175,6 +181,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
                 )
                 clean_response = response.json()['choices'][0]['text'].strip()
                 categorized_data = json.loads(clean_response)
+                categorized_data = {camel_to_snake(k): v for k, v in categorized_data.items()}
 
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
