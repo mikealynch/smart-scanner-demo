@@ -178,71 +178,61 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-if st.session_state.data_uploaded and st.session_state.categorized_data:
-    st.title("Step 5: Review and Edit Data")
-    st.markdown("""
-    ### Display and Edit Extracted Data
-    We then display the extracted data fields in a user-friendly format. Users can review the information and make edits if necessary to ensure everything is accurate before final submission.
-    """)
+if st.button("Submit to Database"):
+    try:
+        conn = sqlite3.connect("business_cards.db")
+        cursor = conn.cursor()
 
-    updated_data = {}
-    for key, value in st.session_state.categorized_data.items():
-        updated_data[key] = st.text_input(key, value=value)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS business_cards (
+            first_name TEXT,
+            last_name TEXT,
+            position TEXT,
+            email TEXT,
+            phone_number TEXT,
+            country TEXT,
+            company_name TEXT
+        )
+        """)
 
-    if st.button("Submit to Database"):
-        try:
-            conn = sqlite3.connect("business_cards.db")
-            cursor = conn.cursor()
+        cursor.execute("""
+        INSERT INTO business_cards (first_name, last_name, position, email, phone_number, country, company_name)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            updated_data.get("first_name", ""),
+            updated_data.get("last_name", ""),
+            updated_data.get("position", ""),
+            updated_data.get("email", ""),
+            updated_data.get("phone_number", ""),
+            updated_data.get("country", ""),
+            updated_data.get("company_name", "")
+        ))
 
-            cursor.execute("""
-            CREATE TABLE IF NOT EXISTS business_cards (
-                first_name TEXT,
-                last_name TEXT,
-                position TEXT,
-                email TEXT,
-                phone_number TEXT,
-                country TEXT,
-                company_name TEXT
-            )
-            """)
+        conn.commit()
+        conn.close()
 
-            cursor.execute("""
-            INSERT INTO business_cards (first_name, last_name, position, email, phone_number, country, company_name)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                updated_data.get("first_name", ""),
-                updated_data.get("last_name", ""),
-                updated_data.get("position", ""),
-                updated_data.get("email", ""),
-                updated_data.get("phone_number", ""),
-                updated_data.get("country", ""),
-                updated_data.get("company_name", "")
-            ))
+        st.success("Data successfully submitted to the database!")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
-            conn.commit()
-            conn.close()
+if st.button("View Database Contents"):
+    try:
+        conn = sqlite3.connect("business_cards.db")
+        cursor = conn.cursor()
 
-            st.success("Data successfully submitted to the database!")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+        cursor.execute("SELECT * FROM business_cards")
+        rows = cursor.fetchall()
 
-    if st.button("View Database Contents"):
-        try:
-            conn = sqlite3.connect("business_cards.db")
-            cursor = conn.cursor()
+        if rows:
+            df = pd.DataFrame(rows, columns=["First Name", "Last Name", "Position", "Email", "Phone Number", "Country", "Company Name"])
+            st.write(df)
+        else:
+            st.info("The database is empty.")
 
-            cursor.execute("SELECT * FROM business_cards")
-            rows = cursor.fetchall()
+        conn.close()
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
-            if rows:
-                df = pd.DataFrame(rows, columns=["First Name", "Last Name", "Position", "Email", "Phone Number", "Country", "Company Name"])
-                st.write(df)
-            else:
-                st.info("The database is empty.")
-
-            conn.close()
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
 
     if st.button("Clear Database"):
         try:
