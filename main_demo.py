@@ -234,8 +234,8 @@ if st.button("View Database Contents"):
         st.error(f"An error occurred: {e}")
 
 
-    if st.button("Clear Database"):
-        try:
+if st.button("Clear Database"):
+     try:
             conn = sqlite3.connect("business_cards.db")
             cursor = conn.cursor()
 
@@ -244,6 +244,6 @@ if st.button("View Database Contents"):
             conn.close()
 
             st.success("Database cleared successfully!")
-        except Exception as e:
+    except Exception as e:
             st.error(f"An error occurred while clearing the database: {e}")
 
