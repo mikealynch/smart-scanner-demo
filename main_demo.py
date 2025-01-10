@@ -196,27 +196,27 @@ if st.session_state.data_uploaded and st.session_state.categorized_data:
 
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS business_cards (
-                first_name TEXT,
-                last_name TEXT,
+                firstName TEXT,
+                firstName TEXT,
                 position TEXT,
                 email TEXT,
-                phone_number TEXT,
+                phoneNumber TEXT,
                 country TEXT,
-                company_name TEXT
+                companyName TEXT
             )
             """)
 
             cursor.execute("""
-            INSERT INTO business_cards (first_name, last_name, position, email, phone_number, country, company_name)
+            INSERT INTO business_cards (firstName, lastName, position, email, phoneNumber, country, companyName)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (
-                updated_data.get("first_name", ""),
-                updated_data.get("last_name", ""),
+                updated_data.get("firstName", ""),
+                updated_data.get("lastName", ""),
                 updated_data.get("position", ""),
                 updated_data.get("email", ""),
-                updated_data.get("phone_number", ""),
+                updated_data.get("phoneNumber", ""),
                 updated_data.get("country", ""),
-                updated_data.get("company_name", "")
+                updated_data.get("companyName", "")
             ))
 
             conn.commit()
