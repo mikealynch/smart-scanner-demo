@@ -101,9 +101,10 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         To speed up processing, we compress the cropped images if the height > 1000px. We resize the image to 50% of its original size. This reduces the image dimensions, making it easier and faster for EasyOCR to analyze the text, without compromising the quality too much. We only resize images > 1000px because if the image is smaller than that, the copy gets distorted and OCR may not work. 
         """)
 
-        #st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width =True)
-        st.image(image, caption="Cropped and Uncompressed Business Card", use_container_width =True)
-
+        st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width =True)
+        
+        pil_image = image
+        
         if pil_image.height > 1000:
             compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
             st.image(compressed_image, caption="Cropped and Compressed Business Card", use_container_width =True)
