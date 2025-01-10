@@ -123,7 +123,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
 
         st.markdown("""
         #### Send Text Data to OpenAI:
-        Now, we take the detected text and send it to **OpenAI's GPT model** to format the data into a **JSON structure**. The goal is to extract key fields. This step allows us to clean up the extracted information and organize it in a way that's easy to work with.
+        Now, we take the detected text and send it to **OpenAI's GPT model** to format the data into a **JSON structure**. The goal is to extract key fields. This step allows us to clean up the extracted information and organize it in a way that's easy to work with. Please use snake case for the keys and not camel case. 
         """)
 
         st.markdown(f"""
