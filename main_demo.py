@@ -223,6 +223,8 @@ if st.session_state.data_uploaded and st.session_state.categorized_data:
             conn.close()
 
             st.success("Data successfully submitted to the database!")
+            st.write("Updated Data for Submission:", updated_data)
+
         except Exception as e:
             st.error(f"An error occurred: {e}")
 
