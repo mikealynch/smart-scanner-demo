@@ -31,16 +31,19 @@ if "categorized_data" not in st.session_state:
     st.session_state.categorized_data = None
 if "data_uploaded" not in st.session_state:
     st.session_state.data_uploaded = False
+if "ocr_results" not in st.session_state:
+    st.session_state.ocr_results = None
 
 # Header section for the Streamlit app
 with header:
     st.title('Let\'s Scan a Business Card')
 
-# File uploader for image input
+# Step 1: File Upload
+st.title('Step 1: Upload the Image')
 uploaded_file = st.file_uploader("Upload a business card image for OCR analysis", type=["jpg", "jpeg", "png", "bmp"])
 if uploaded_file is not None and not st.session_state.data_uploaded:
     try:
-        st.title('Step 1: Image Pre-processing')
+        st.title('Step 2: Image Pre-processing')
 
         # Convert the uploaded file to a NumPy array (OpenCV format)
         file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
@@ -48,6 +51,8 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
 
         if image is None:
             raise ValueError("Failed to load image. Ensure the file is a valid image.")
+
+        st.image(image, caption="Uploaded Image", use_column_width=True)
 
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         lower_bound = np.array([0, 0, 180])
@@ -69,12 +74,22 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         pil_image = Image.fromarray(cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB))
         compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
 
+        st.title('Step 3: OCR Text Extraction')
+
         # Initialize EasyOCR reader for English and Spanish
         reader = easyocr.Reader(['en', 'es'])
         image_np = np.array(compressed_image)
         result = reader.readtext(image_np)
 
+        st.image(compressed_image, caption="Processed Business Card", use_column_width=True)
+
+        st.write("Detected Text:")
         text_values = [detection[1] for detection in result]
+        for text in text_values:
+            st.write(f"- {text}")
+
+        st.session_state.ocr_results = text_values
+
         prompt = "the information in this data set was pulled from a single business card. using this information, create valid json that only contains first name, last name, position, email, phone number, country, and company name: " + " ".join(text_values)
 
         data = {
@@ -115,7 +130,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         st.error(f"An error occurred: {str(e)}")
 
 if st.session_state.data_uploaded and st.session_state.categorized_data:
-    st.title("Step 4: Send Data")
+    st.title("Step 4: Review and Edit Data")
     st.markdown("""
     ### Display and Edit Extracted Data
 
