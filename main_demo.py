@@ -189,42 +189,42 @@ if st.session_state.data_uploaded and st.session_state.categorized_data:
     for key, value in st.session_state.categorized_data.items():
         updated_data[key] = st.text_input(key, value=value)
 
-   if st.button("Submit to Database"):
-    try:
-        conn = sqlite3.connect("business_cards.db")
-        cursor = conn.cursor()
+    if st.button("Submit to Database"):
+        try:
+            conn = sqlite3.connect("business_cards.db")
+            cursor = conn.cursor()
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS business_cards (
-            first_name TEXT,
-            last_name TEXT,
-            position TEXT,
-            email TEXT,
-            phone_number TEXT,
-            country TEXT,
-            company_name TEXT
-        )
-        """)
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS business_cards (
+                first_name TEXT,
+                last_name TEXT,
+                position TEXT,
+                email TEXT,
+                phone_number TEXT,
+                country TEXT,
+                company_name TEXT
+            )
+            """)
 
-        cursor.execute("""
-        INSERT INTO business_cards (first_name, last_name, position, email, phone_number, country, company_name)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (
-            updated_data.get("first_name", ""),
-            updated_data.get("last_name", ""),
-            updated_data.get("position", ""),
-            updated_data.get("email", ""),
-            updated_data.get("phone_number", ""),
-            updated_data.get("country", ""),
-            updated_data.get("company_name", "")
-        ))
+            cursor.execute("""
+            INSERT INTO business_cards (first_name, last_name, position, email, phone_number, country, company_name)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                updated_data.get("first_name", ""),
+                updated_data.get("last_name", ""),
+                updated_data.get("position", ""),
+                updated_data.get("email", ""),
+                updated_data.get("phone_number", ""),
+                updated_data.get("country", ""),
+                updated_data.get("company_name", "")
+            ))
 
-        conn.commit()
-        conn.close()
+            conn.commit()
+            conn.close()
 
-        st.success("Data successfully submitted to the database!")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+            st.success("Data successfully submitted to the database!")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
     if st.button("View Database Contents"):
         try:
@@ -243,11 +243,6 @@ if st.session_state.data_uploaded and st.session_state.categorized_data:
             conn.close()
         except Exception as e:
             st.error(f"An error occurred: {e}")
-
-   
-   
-   
-   
 
     if st.button("Clear Database"):
         try:
