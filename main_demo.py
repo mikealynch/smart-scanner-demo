@@ -165,7 +165,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
                 st.session_state.data_uploaded = True
                 break
             except json.JSONDecodeError:
-                prompt = "convert this text to valid json: " + clean_response
+                prompt = "convert this text to valid json and make surethe keys are snake case: " + clean_response
                 data["prompt"] = prompt
                 response = requests.post(
                     "https://api.openai.com/v1/completions",
