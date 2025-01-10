@@ -98,7 +98,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
 
         st.markdown("""
         ### Crop and Compress the Image for Faster Processing
-        To speed up processing, we compress the cropped image by resizing it to 50% of its original size. This reduces the image dimensions, making it easier and faster for EasyOCR to analyze the text, without compromising the quality too much.
+        To speed up processing, we compress the cropped images if the height > 1000px. We resize the image to 50% of its original size. This reduces the image dimensions, making it easier and faster for EasyOCR to analyze the text, without compromising the quality too much. We only resize images > 1000px because if the image is smaller than that, the copy gets distorted and OCR may not work. 
         """)
 
         st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width =True)
