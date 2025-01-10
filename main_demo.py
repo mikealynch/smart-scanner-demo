@@ -39,11 +39,11 @@ with header:
     st.title('Let\'s Scan a Business Card')
 
 # Step 1: File Upload
-st.title('Step 1: Upload the Image')
+st.title('Upload the Image')
 uploaded_file = st.file_uploader("Upload a business card image for OCR analysis", type=["jpg", "jpeg", "png", "bmp"])
 if uploaded_file is not None and not st.session_state.data_uploaded:
     try:
-        st.title('Step 2: Image Pre-processing')
+        st.title('Image Pre-processing')
 
         st.write(f"Uploaded file type: {uploaded_file.type}")
         st.image(uploaded_file, caption="Uploaded File", use_column_width=True)
@@ -99,7 +99,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_column_width=True)
         st.image(compressed_image, caption="Cropped and Compressed Business Card", use_column_width=True)
 
-        st.title('Step 3: OCR Text Extraction')
+        st.title('OCR Text Extraction')
 
         st.markdown("""
         ### Use OCR to Extract Text from the Image
@@ -119,7 +119,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
 
         prompt = "the information in this data set was pulled from a single business card. using this information, create valid json that only contains first name, last name, position, email, phone number, country, and company name: " + " ".join(text_values)
 
-        st.title("Step 4: Format and Process the Data")
+        st.title("Format and Process the Data")
 
         st.markdown("""
         #### Send Text Data to OpenAI:
@@ -179,7 +179,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         st.error(f"An error occurred: {str(e)}")
 
 if st.session_state.data_uploaded and st.session_state.categorized_data:
-    st.title("Step 5: Review and Edit Data")
+    st.title("Review and Edit Data")
     st.markdown("""
     ### Display and Edit Extracted Data
     We then display the extracted data fields in a user-friendly format. Users can review the information and make edits if necessary to ensure everything is accurate before final submission.
