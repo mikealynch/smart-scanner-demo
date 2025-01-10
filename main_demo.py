@@ -15,13 +15,8 @@ import sqlite3  # For SQL database integration
 
 # Helper function to convert camelCase to snake_case
 def camel_to_snake(name):
-    # Replace spaces with underscores
-    name = re.sub(r'\s+', '_', name)
-    # Add underscores between camelCase transitions
-    s1 = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name)
-    # Ensure all characters are lowercase
+    s1 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
     return s1.lower()
-
 
 # Set the environment variable before importing easyocr
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -99,7 +94,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
 
         cropped_image = image[y:y+h, x:x+w]
         pil_image = Image.fromarray(cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB))
-        compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
+        
 
         st.markdown("""
         ### Crop and Compress the Image for Faster Processing
@@ -107,7 +102,11 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         """)
 
         st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width =True)
-        st.image(compressed_image, caption="Cropped and Compressed Business Card", use_container_width =True)
+        
+        if pil_image.height > 1000:
+            compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
+            st.image(compressed_image, caption="Cropped and Compressed Business Card", use_container_width =True)
+            pil_image = compressed_image
 
         st.title('OCR Text Extraction')
 
@@ -117,7 +116,7 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         """)
 
         reader = easyocr.Reader(['en', 'es'])
-        image_np = np.array(compressed_image)
+        image_np = np.array(pil_image)
         result = reader.readtext(image_np)
 
         st.write("Detected Text from the Business Card:")
