@@ -102,13 +102,13 @@ if uploaded_file is not None and not st.session_state.data_uploaded:
         """)
 
         st.image(pil_image, caption="Cropped and Uncompressed Business Card", use_container_width =True)
-        
-        pil_image = file_bytes
-        
+                
         if pil_image.height > 1000:
             compressed_image = pil_image.resize((int(pil_image.width * 0.5), int(pil_image.height * 0.5)))
             st.image(compressed_image, caption="Cropped and Compressed Business Card", use_container_width =True)
             pil_image = compressed_image
+            
+        else: pil_image = image
 
         st.title('OCR Text Extraction')
 
